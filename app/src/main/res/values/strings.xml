@@ -2,5 +2,7 @@
     <string name="app_name">AndroidAssignment</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="maps_api_key">AIzaSyCdXqXRTPT9YJ6FDxhXmUSGnXICJhC7sYY</string>
+
 
 </resources>

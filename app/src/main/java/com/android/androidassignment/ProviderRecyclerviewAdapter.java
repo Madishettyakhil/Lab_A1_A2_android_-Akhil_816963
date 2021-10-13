@@ -1,5 +1,6 @@
 package com.android.androidassignment;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,7 @@ public class ProviderRecyclerviewAdapter extends RecyclerView.Adapter<ProviderRe
                 frequency = 1;
             }
 
-            holder.text1.setText(providerlist2.get(position));
+            holder.text1.setText(providerlist2.get(position).toLowerCase());
             holder.text2.setText(String.valueOf(frequency));
         }
     }
@@ -56,6 +57,15 @@ public class ProviderRecyclerviewAdapter extends RecyclerView.Adapter<ProviderRe
             super(itemView);
             text1 = itemView.findViewById(R.id.text1);
             text2 = itemView.findViewById(R.id.text2);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(itemView.getContext(),ViewProductActivity.class);
+                    intent.putExtra("provider",providerlist2.get(getAdapterPosition()));
+                    itemView.getContext().startActivity(intent);
+                }
+            });
 
         }
     }

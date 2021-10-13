@@ -1,18 +1,19 @@
 package com.android.androidassignment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -90,6 +91,7 @@ public class ProviderFragment extends Fragment {
 
         Set<String> providerset = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         providerset.addAll(providerlist);
+        providerlist2.clear();
         providerlist2.addAll(providerset);
 
         provider = view.findViewById(R.id.provider);
@@ -100,5 +102,47 @@ public class ProviderFragment extends Fragment {
         provider.setLayoutManager(layoutManager);
         provider.setAdapter(providerRecyclerviewAdapter);
         provider.addItemDecoration(new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL));
+        ItemTouchHelper.SimpleCallback itsc = new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                dbHelper = new ProductDBHelper(getContext());
+
+                final int index = viewHolder.getAdapterPosition();
+
+                AlertDialog.Builder alertdialog = new AlertDialog.Builder(getContext());
+                alertdialog.setTitle("Delete Provider");
+                alertdialog.setMessage("Clicking on yes will delete the provider");
+                alertdialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dbHelper.deleteProductbyprovider(providerlist2.get(index));
+                        providerlist2.remove(index);
+                        providerlist = dbHelper.getProvider();
+                        providerRecyclerviewAdapter.notifyItemRemoved(index);
+                    }
+                });
+                alertdialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        providerRecyclerviewAdapter.notifyDataSetChanged();
+                    }
+                });
+                alertdialog.create().show();
+
+                dbHelper.close();
+
+            }
+        };
+
+        ItemTouchHelper ith = new ItemTouchHelper(itsc);
+        ith.attachToRecyclerView(provider);
+
     }
 }

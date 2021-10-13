@@ -1,13 +1,16 @@
 package com.android.androidassignment;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-
-import android.os.Bundle;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -18,6 +21,14 @@ public class MainActivity extends AppCompatActivity {
     ViewPager2 pager;
 
     String[] tabs = {"Provider","Product"};
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        finish();
+        startActivity(getIntent());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
                 tab.setText(tabs[position]);
             }
         }).attach();
+
+        pager.setUserInputEnabled(false);
 
         pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -72,6 +85,24 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return 2;
+
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_item,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()== R.id.item_add)
+        {
+            Intent intent = new Intent(MainActivity.this, EntryActivity.class);
+            intent.putExtra("activity","main");
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -1,5 +1,6 @@
 package com.android.androidassignment;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -127,7 +128,7 @@ public class ProductDBHelper extends SQLiteOpenHelper {
 
         if (result.moveToFirst()) {
             do {
-                provider.add(result.getString(result.getColumnIndex(column_provider_name)));
+                provider.add(result.getString(result.getColumnIndex("providername")));
             } while (result.moveToNext());
         }
         result.close();
@@ -206,5 +207,62 @@ public class ProductDBHelper extends SQLiteOpenHelper {
         database = this.getReadableDatabase();
         int count = (int) DatabaseUtils.queryNumEntries(database, table_name);
         return count;
+    }
+
+    public boolean insertProduct(Integer id, String column_product_name, String column_product_desc,
+                                 String column_product_price, String column_provider_name,
+                                 String column_provider_email, String column_provider_phone,
+                                 String column_latitude, String column_longitude)
+    {
+        database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("id",id);
+        contentValues.put("productname",column_product_name);
+        contentValues.put("productdesc",column_product_desc);
+        contentValues.put("productprice",column_product_price);
+        contentValues.put("providername",column_provider_name);
+        contentValues.put("provideremail",column_provider_email);
+        contentValues.put("providerphone",column_provider_phone);
+        contentValues.put("latitude",column_latitude);
+        contentValues.put("longitude",column_longitude);
+
+        database.insert(table_name,null,contentValues);
+        return true;
+    }
+
+    public boolean UpdateProduct(Integer id, String column_product_name, String column_product_desc,
+                                 String column_product_price, String column_provider_name,
+                                 String column_provider_email, String column_provider_phone,
+                                 String column_latitude, String column_longitude)
+    {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("id",id);
+        contentValues.put("productname",column_product_name);
+        contentValues.put("productdesc",column_product_desc);
+        contentValues.put("productprice",column_product_price);
+        contentValues.put("providername",column_provider_name);
+        contentValues.put("provideremail",column_provider_email);
+        contentValues.put("providerphone",column_provider_phone);
+        contentValues.put("latitude",column_latitude);
+        contentValues.put("longitude",column_longitude);
+
+        database.update(table_name,contentValues,"id = ? ",
+                new String[]{Integer.toString(id)});
+        return true;
+    }
+
+    public Integer deleteProductbyid (int id) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        return database.delete(table_name,
+                "id = ? ",
+                new String[] { Integer.toString(id) });
+    }
+
+    public Integer deleteProductbyprovider (String provider) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        return database.delete(table_name,
+                "providername = ? ",
+                new String[] { provider });
     }
 }

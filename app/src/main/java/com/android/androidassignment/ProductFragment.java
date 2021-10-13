@@ -1,19 +1,20 @@
 package com.android.androidassignment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -117,7 +118,47 @@ public class ProductFragment extends Fragment {
             }
         });
 
+        ItemTouchHelper.SimpleCallback itsc = new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
 
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                dbHelper = new ProductDBHelper(getContext());
 
+                final int index = viewHolder.getAdapterPosition();
+
+                AlertDialog.Builder alertdialog = new AlertDialog.Builder(getContext());
+                alertdialog.setTitle("Delete Item");
+                alertdialog.setMessage("Clicking on yes will delete the item");
+                alertdialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dbHelper.deleteProductbyid(Integer.parseInt(String.valueOf(id.get(index))));
+                        id.remove(index);
+                        productname.remove(index);
+                        productprice.remove(index);
+                        productRecyclerviewAdapter.notifyItemRemoved(index);
+                    }
+                });
+                alertdialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        productRecyclerviewAdapter.notifyDataSetChanged();
+                    }
+                });
+                alertdialog.create().show();
+
+                dbHelper.close();
+
+            }
+        };
+
+        ItemTouchHelper ith = new ItemTouchHelper(itsc);
+        ith.attachToRecyclerView(product);
     }
 }

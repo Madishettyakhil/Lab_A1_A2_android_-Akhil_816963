@@ -24,14 +24,16 @@ public class ProductRecyclerviewAdapter extends
     @Override
     public viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_child,parent,false);
-        return new ProductRecyclerviewAdapter.viewholder(item);
+        return new viewholder(item);
     }
 
     @Override
     public void onBindViewHolder(@NonNull viewholder holder, int position) {
-        holder.text1.setText(searchlist.get(position));
-        holder.text2.setText("Price : $"+productprice.get(position));
-
+        if(id.size()>0)
+        {
+            holder.text1.setText(searchlist.get(position));
+            holder.text2.setText("Price : $"+productprice.get(position));
+        }
     }
 
 
